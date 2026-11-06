@@ -4,7 +4,7 @@ Guidance for AI agents and humans working on this Chrome extension.
 
 ## What this is
 
-Manifest V3 Chrome extension (Vite + React + TypeScript via `@crxjs/vite-plugin`).  
+Manifest V3 Chrome extension (Vite + React + TypeScript via `@crxjs/vite-plugin`).
 Users type one query and open it across multiple search engines (Google, Bing, DuckDuckGo, …) to compare results.
 
 ## Layout
@@ -42,7 +42,7 @@ bun run build        # format + lint:fix + typecheck + tsc + vite build
 bun run zip          # build + zip under package/
 ```
 
-Load unpacked: `chrome://extensions` → Developer mode → **Load unpacked** → `build/`.  
+Load unpacked: `chrome://extensions` → Developer mode → **Load unpacked** → `build/`.
 After every meaningful change: rebuild (or keep `dev` running) and **Reload** the extension.
 
 ## Smoke test after changes
