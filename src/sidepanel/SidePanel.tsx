@@ -7,13 +7,14 @@ export const SidePanel = () => {
   const link = 'https://github.com/guocaoyi/create-chrome-ext'
 
   useEffect(() => {
-    chrome.storage.sync.get(['count'], (result) => {
-      setCountSync(result.count || 0)
+    chrome.storage.sync.get('count', (result) => {
+      const value = result.count
+      setCountSync(typeof value === 'number' ? value : 0)
     })
 
     chrome.runtime.onMessage.addListener((request) => {
-      if (request.type === 'COUNT') {
-        setCountSync(request.count || 0)
+      if (request.type === 'COUNT' && typeof request.count === 'number') {
+        setCountSync(request.count)
       }
     })
   }, [])

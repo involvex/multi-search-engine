@@ -27,19 +27,19 @@
     "zip": "bun run build && bun src/zip.js"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@crxjs/vite-plugin": "^2.0.0-beta.26",
-    "@types/chrome": "^0.0.246",
-    "@types/react": "^18.2.28",
-    "@types/react-dom": "^18.2.13",
-    "@vitejs/plugin-react": "^4.1.0",
-    "gulp": "^5.0.0",
-    "gulp-zip": "^6.0.0",
-    "prettier": "^3.0.3",
-    "typescript": "^5.2.2",
-    "vite": "^5.4.10"
+    "@crxjs/vite-plugin": "^2.7.1",
+    "@types/chrome": "^0.3.7",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "gulp": "^5.0.1",
+    "gulp-zip": "^6.1.0",
+    "prettier": "^3.9.10",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.21"
   }
 }
