@@ -1,8 +1,7 @@
 import { defineManifest } from '@crxjs/vite-plugin'
 import packageData from '../package.json'
 
-//@ts-ignore
-const isDev = process.env.NODE_ENV == 'development'
+const isDev = process.env.NODE_ENV === 'development'
 
 export default defineManifest({
   name: `${packageData.displayName || packageData.name}${isDev ? ` ➡️ Dev` : ''}`,
@@ -18,21 +17,15 @@ export default defineManifest({
   action: {
     default_popup: 'popup.html',
     default_icon: 'img/logo-48.png',
+    default_title: 'Multi Search',
   },
   options_page: 'options.html',
-  devtools_page: 'devtools.html',
   background: {
     service_worker: 'src/background/index.ts',
     type: 'module',
   },
-  content_scripts: [
-    {
-      matches: ['http://*/*', 'https://*/*'],
-      js: ['src/contentScript/index.ts'],
-    },
-  ],
-  side_panel: {
-    default_path: 'sidepanel.html',
+  chrome_url_overrides: {
+    newtab: 'newtab.html',
   },
   web_accessible_resources: [
     {
@@ -40,8 +33,5 @@ export default defineManifest({
       matches: [],
     },
   ],
-  permissions: ['sidePanel', 'storage'],
-  chrome_url_overrides: {
-    newtab: 'newtab.html',
-  },
+  permissions: ['storage'],
 })

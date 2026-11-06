@@ -1,9 +1,9 @@
 {
   "name": "multi-search-engine",
-  "displayName": "multi-search-engine",
-  "version": "0.0.0",
+  "displayName": "Multi Search",
+  "version": "0.1.0",
   "author": "involvex",
-  "description": "",
+  "description": "Search Google, Bing, DuckDuckGo, and more at once — then pick the best result.",
   "type": "module",
   "license": "MIT",
   "keywords": [

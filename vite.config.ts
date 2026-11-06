@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 import manifest from './src/manifest'
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
   return {
     build: {
       emptyOutDir: true,
