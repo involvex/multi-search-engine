@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react'
 
+import packageData from '../../package.json'
 import {
   createCustomEngineId,
   isAiEngine,
@@ -18,6 +19,10 @@ import {
 import { getEngines, resetEngines, saveEngines, syncSelectedWithEngines } from '../shared/storage'
 
 import './Options.css'
+
+const REPO_URL = 'https://github.com/involvex/multi-search-engine'
+const SPONSOR_URL = 'https://github.com/involvex/multi-search-engine?sponsor=1'
+const AUTHOR_URL = 'https://github.com/involvex'
 
 type Draft = {
   name: string
@@ -421,6 +426,51 @@ export const Options = () => {
           </label>
           <button type="submit">Add engine</button>
         </form>
+      </section>
+
+      <section className="options__section options__about" aria-label="About">
+        <h2>About</h2>
+        <dl className="options__about-list">
+          <div>
+            <dt>Extension</dt>
+            <dd>
+              {packageData.displayName || packageData.name} v{packageData.version}
+            </dd>
+          </div>
+          <div>
+            <dt>Author</dt>
+            <dd>
+              <a className="options__about-link" href={AUTHOR_URL} target="_blank" rel="noreferrer">
+                {packageData.author}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt>Source</dt>
+            <dd>
+              <a className="options__about-link" href={REPO_URL} target="_blank" rel="noreferrer">
+                github.com/involvex/multi-search-engine
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt>Support</dt>
+            <dd>
+              <a
+                className="options__about-link options__about-link--sponsor"
+                href={SPONSOR_URL}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Sponsor on GitHub
+              </a>
+            </dd>
+          </div>
+        </dl>
+        <p className="options__help">
+          Multi Search is open source. Issues and pull requests are welcome on GitHub. If it saves
+          you time, sponsoring helps keep development going.
+        </p>
       </section>
     </main>
   )

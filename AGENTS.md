@@ -43,6 +43,8 @@ bun run format
 bun run build        # format + lint:fix + typecheck + tsc + vite build
 bun run zip          # build + zip under package/
 bun run edge:upload  # dry-run Edge Add-ons package upload (needs .env + product id)
+bun run release      # patch bump (default): changelog, zip, commit, tag, push, GitHub release
+# bun run release -- --minor|--major|--version x.y.z|--dry-run|--notes "…"
 ```
 
 Load unpacked: `chrome://extensions` or `edge://extensions` → Developer mode → **Load unpacked** → `build/`.

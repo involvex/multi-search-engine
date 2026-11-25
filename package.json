@@ -25,7 +25,8 @@
     "typecheck": "bun check",
     "prebuild": "bun run format && bun run lint:fix && bun run typecheck",
     "zip": "bun run build && bun src/zip.js",
-    "edge:upload": "node scripts/publish-edge.mjs"
+    "edge:upload": "node scripts/publish-edge.mjs",
+    "release": "node scripts/release.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

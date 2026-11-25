@@ -130,3 +130,16 @@ bun run edge:upload -- --upload --publish  # upload then publish draft
 ```
 
 Requires `.env` with `MICROSOFT_CLIENT_ID`, `MICROSOFT_API_KEY`, and `EDGE_PRODUCT_ID`. Never commit `.env`.
+
+### GitHub release script
+
+Bumps `package.json` (manifest version follows at build), prepends `CHANGELOG.md`, runs `zip`, commits, tags, pushes, and creates a GitHub release with the zip artifact. Default bump is **patch**. Requires a clean tree and authenticated `gh`.
+
+```shell
+bun run release                         # 0.3.0 → 0.3.1
+bun run release -- --dry-run
+bun run release -- --minor
+bun run release -- --major
+bun run release -- --version 1.0.0
+bun run release -- --notes "feat: …" --notes "fix: …"
+```

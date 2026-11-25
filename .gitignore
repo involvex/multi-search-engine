@@ -22,5 +22,8 @@
 # secrets
 secrets.*.js
 
+# release script temp notes
+.release-notes-*.md
+
 .cline
 .env
