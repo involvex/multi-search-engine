@@ -9,6 +9,13 @@ Summary
   5. version timestamp follow the yyyy.MM.dd format
 ```
 
+## 0.3.1 [2026.11.25]
+
+- feat: Classic/AI search mode and Google AI Mode / Bing Copilot engines
+- feat: optional OpenAI-compatible BYO answers (Kilo Gateway)
+- feat: Options About section with repo and GitHub Sponsors links
+- chore: GitHub release script (bun run release)
+
 ## 0.3.0 [2026.11.25]
 
 - feat: Classic / AI search mode (Google/Bing remap to AI Mode / Copilot Search)
