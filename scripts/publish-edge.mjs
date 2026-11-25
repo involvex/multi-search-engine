@@ -204,7 +204,10 @@ async function main() {
 
   const clientId = requireEnv('MICROSOFT_CLIENT_ID')
   const apiKey = requireEnv('MICROSOFT_API_KEY')
-  const productId = requireEnv('EDGE_PRODUCT_ID')
+  const productId =
+    process.env.EDGE_PRODUCT_ID?.trim() ||
+    process.env.ProductID?.trim() ||
+    requireEnv('EDGE_PRODUCT_ID')
   const zipPath = findLatestZip()
   const uploadEndpoint = `${API_ROOT}/v1/products/${productId}/submissions/draft/package`
 
