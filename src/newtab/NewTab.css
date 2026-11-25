@@ -1,41 +1,213 @@
 .newtab {
+  --nt-ink: #14212b;
+  --nt-muted: #5a6b78;
+  --nt-panel: rgba(255, 252, 247, 0.55);
+  --nt-line: rgba(20, 33, 43, 0.1);
+  --nt-accent: #0f766e;
+  --nt-accent-soft: rgba(15, 118, 110, 0.14);
+  --nt-surface: #f3efe6;
+  --nt-display: 'Bahnschrift', 'Segoe UI Variable Display', Candara, 'Trebuchet MS', sans-serif;
+  --nt-body: 'Segoe UI Variable Text', 'Segoe UI', Candara, sans-serif;
+
   position: relative;
   box-sizing: border-box;
   min-height: 100vh;
   margin: 0;
-  padding: 2.5rem 1.25rem;
+  padding: clamp(1.5rem, 4vh, 3rem) 1.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(138, 180, 248, 0.22), transparent 55%),
-    #202124;
-  color: #e8eaed;
+  color: var(--nt-ink);
+  font-family: var(--nt-body);
+  background: linear-gradient(160deg, #efe8d8 0%, #e4eef0 42%, #d7e6e3 100%);
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
   .newtab {
-    background:
-      radial-gradient(ellipse 70% 50% at 50% -10%, rgba(26, 115, 232, 0.16), transparent 55%),
-      #f8f9fa;
-    color: #1f2328;
+    --nt-ink: #e8eef2;
+    --nt-muted: #9aafbd;
+    --nt-panel: rgba(18, 28, 36, 0.55);
+    --nt-line: rgba(232, 238, 242, 0.12);
+    --nt-accent: #5eead4;
+    --nt-accent-soft: rgba(94, 234, 212, 0.14);
+    --nt-surface: #0f171e;
+    background: linear-gradient(165deg, #0c141a 0%, #132029 48%, #0f1c22 100%);
   }
 }
 
-.newtab__glow {
+.newtab__atmosphere {
   position: absolute;
-  inset: auto 20% -20% 20%;
-  height: 40%;
-  background: radial-gradient(circle, rgba(138, 180, 248, 0.12), transparent 65%);
+  inset: 0;
   pointer-events: none;
+  overflow: hidden;
 }
 
-.newtab__hint {
-  margin: 0;
-  font-size: 0.85rem;
-  opacity: 0.65;
+.newtab__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(8px);
+  opacity: 0.85;
+  animation: newtab-drift 18s ease-in-out infinite alternate;
+}
+
+.newtab__orb--a {
+  width: min(48vw, 420px);
+  height: min(48vw, 420px);
+  top: -12%;
+  left: -8%;
+  background: radial-gradient(circle, rgba(15, 118, 110, 0.28), transparent 70%);
+}
+
+.newtab__orb--b {
+  width: min(42vw, 380px);
+  height: min(42vw, 380px);
+  right: -6%;
+  bottom: -10%;
+  background: radial-gradient(circle, rgba(180, 120, 60, 0.18), transparent 72%);
+  animation-delay: -6s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .newtab__orb--a {
+    background: radial-gradient(circle, rgba(94, 234, 212, 0.16), transparent 70%);
+  }
+
+  .newtab__orb--b {
+    background: radial-gradient(circle, rgba(56, 120, 160, 0.18), transparent 72%);
+  }
+}
+
+.newtab__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+@media (prefers-color-scheme: dark) {
+  .newtab__grain {
+    opacity: 0.07;
+    mix-blend-mode: soft-light;
+  }
+}
+
+.newtab__stage {
+  position: relative;
+  z-index: 1;
+  width: min(640px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  animation: newtab-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.newtab__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
   text-align: center;
+  align-items: center;
+}
+
+.newtab__clock {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.newtab__time {
+  font-family: var(--nt-display);
+  font-size: clamp(2.6rem, 7vw, 3.6rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.newtab__date {
+  font-size: 0.95rem;
+  color: var(--nt-muted);
+  letter-spacing: 0.01em;
+}
+
+.newtab__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  text-align: left;
+}
+
+.newtab__mark {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(20, 33, 43, 0.12);
+  animation: newtab-mark 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.newtab__brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.newtab__title {
+  margin: 0;
+  font-family: var(--nt-display);
+  font-size: clamp(1.7rem, 4vw, 2.15rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.newtab__tagline {
+  margin: 0;
+  font-size: 0.98rem;
+  color: var(--nt-muted);
+  max-width: 22rem;
+}
+
+@keyframes newtab-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes newtab-mark {
+  from {
+    opacity: 0;
+    transform: scale(0.92) rotate(-4deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes newtab-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(18px, 12px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .newtab__stage,
+  .newtab__mark,
+  .newtab__orb {
+    animation: none;
+  }
 }

@@ -9,6 +9,12 @@ Summary
   5. version timestamp follow the yyyy.MM.dd format
 ```
 
+## 0.2.0 [2026.11.25]
+
+- feat: redesigned new-tab hub with clock, brand hero, and atmospheric backdrop
+- feat: page layout engine tiles, recent local searches, and larger search field
+- chore: Edge publish script accepts Partner Center `ProductID` env alias
+
 ## 0.1.0 [2026.11.25]
 
 - feat: remember last engine checkbox set across popup / new tab / context menu

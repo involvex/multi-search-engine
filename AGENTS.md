@@ -70,3 +70,18 @@ After every meaningful change: rebuild (or keep `dev` running) and **Reload** th
 
 - Omnibox keyword
 - Optional Chrome Web Store publish path
+- GitHub Actions tag → `edge:upload -- --upload --publish`
+
+## Current work
+
+- v0.2.0 new-tab hub polish; Edge product id wired locally for API updates
+
+## Learned preferences
+
+- Edge listing copy must not name other browsers (Partner Center validation)
+- Prefer local `EDGE_PRODUCT_ID` / Partner Center `ProductID` for API updates after first listing
+
+## Learned workspace facts
+
+- `msstore` CLI is for Store apps, not Edge extensions; use `scripts/publish-edge.mjs`
+- New tab and popup share `SearchPanel`; page layout gets recent queries via `chrome.storage.local`
