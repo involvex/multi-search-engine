@@ -7,11 +7,14 @@ Built with Vite + React (`create-chrome-ext`).
 ## Features
 
 - Popup search box with a counted primary action and per-engine **Open**
+- Classic / AI search mode (AI remaps Google → AI Mode, Bing → Copilot Search)
+- Built-in Google AI Mode and Bing Copilot Search engines (off by default)
+- Optional OpenAI-compatible provider (e.g. Kilo Gateway) for inline answers on the new-tab hub
 - Remembers which engines you last checked (`chrome.storage.sync`)
 - New Tab page replaced with the same Multi Search hub
 - Right-click selected text → **Search “…” with Multi Search**
 - Options page to enable, reorder, edit, and add custom engines (`{query}` URL templates)
-- Defaults: Google, Bing, DuckDuckGo, Brave Search, Ecosia, Yahoo
+- Defaults: Google, Bing, DuckDuckGo, Brave Search, Ecosia, Yahoo (+ AI engines disabled)
 
 ## Requirements
 
@@ -53,6 +56,8 @@ Reload the extension after rebuilds.
 5. Empty query shows validation and opens no tabs
 6. Uncheck engines, close popup, reopen → same checkboxes remain
 7. Select text on a page → context menu opens tabs for the remembered selection
+8. Toggle **AI** mode → Google/Bing open AI search URLs; enable Google AI Mode / Bing Copilot in Options if you want them as separate engines
+9. Options → AI provider: save a base URL + key, grant host permission, then search from the new tab to see an inline answer
 
 See also [AGENTS.md](./AGENTS.md) for contributor / AI-agent notes.
 
@@ -98,12 +103,13 @@ See the [Chrome Web Store publish guide](https://developer.chrome.com/docs/webst
 
 **Permission justifications:**
 
-- `storage` — Saves the engine list (enabled/order/custom templates) and the last set of engines you checked so the popup, new tab, and context menu stay consistent. No account or browsing history is stored.
+- `storage` — Saves the engine list (enabled/order/custom templates), Classic/AI mode, and the last set of engines you checked so the popup, new tab, and context menu stay consistent. Optional BYO API keys are stored in local storage on this device only.
 - `contextMenus` — Adds a right-click item on selected text so you can search that selection with Multi Search without copying it into the popup.
+- Optional host access — Requested only when you enable an OpenAI-compatible AI provider, and only for the origin of the base URL you enter (for example `https://api.kilo.ai/*`). Used to call that provider’s chat completions API from the new-tab hub.
 
-**Remote code:** No. All extension code ships in the package; searches open ordinary HTTPS pages in new tabs.
+**Remote code:** No. All extension code ships in the package; searches open ordinary HTTPS pages in new tabs. Optional BYO answers use `fetch` to the user-configured endpoint only.
 
-**Data / privacy:** Queries are not collected by Multi Search. They are only placed into the selected engines’ URL templates and opened as tabs you control. Settings sync via the browser’s sync storage when the user is signed in.
+**Data / privacy:** Queries are not collected by Multi Search. They are only placed into the selected engines’ URL templates and opened as tabs you control. If you enable a BYO AI provider, the query and your API key are sent only to that configured base URL. Engine preferences sync via the browser’s sync storage when signed in; API keys never sync.
 
 **New tab override:** The extension replaces the browser new-tab page with the Multi Search hub (same search UI as the popup). This is the product’s search home, not an advertising page.
 

@@ -28,8 +28,9 @@ Unused scaffold folders (`sidepanel`, `devtools`, `contentScript`) may still exi
 2. Engine URL templates must include `{query}`; values are `encodeURIComponent`’d in `buildSearchUrl`.
 3. Settings live in `chrome.storage.sync` under keys `engines` and `selectedEngineIds`. Prefer `getEngines` / `saveEngines` / `mergeWithDefaults` / `getSelectedEngineIds` / `saveSelectedEngineIds` / `syncSelectedWithEngines`.
 4. Built-in engines (`builtin: true`) can be disabled/edited but not deleted; customs can be deleted.
-5. Permissions stay minimal (`storage`, `contextMenus`). Do not add host permissions or scraping for SERPs in v1.
+5. Permissions stay minimal (`storage`, `contextMenus`). Optional host permissions are only for a user-configured OpenAI-compatible provider origin — never always-on broad hosts, and never scrape SERPs.
 6. Node/Bun for tooling; never assume Bun for the extension runtime (Chrome / Edge).
+7. BYO API keys live in `chrome.storage.local` only (`llmSettings.ts`). Classic/AI `searchMode` is sync; use `resolveSearchUrl` so Google/Bing remap in AI mode.
 
 ## Commands
 
@@ -74,7 +75,7 @@ After every meaningful change: rebuild (or keep `dev` running) and **Reload** th
 
 ## Current work
 
-- v0.2.0 new-tab hub polish; Edge product id wired locally for API updates
+- v0.3.0 Classic/AI mode + BYO OpenAI-compatible answers on new tab
 
 ## Learned preferences
 
@@ -85,3 +86,5 @@ After every meaningful change: rebuild (or keep `dev` running) and **Reload** th
 
 - `msstore` CLI is for Store apps, not Edge extensions; use `scripts/publish-edge.mjs`
 - New tab and popup share `SearchPanel`; page layout gets recent queries via `chrome.storage.local`
+- Google AI Mode URL uses `udm=50`; Bing Copilot Search uses `/copilotsearch`
+- Kilo Gateway default base URL: `https://api.kilo.ai/api/gateway`

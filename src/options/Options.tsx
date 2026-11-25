@@ -1,6 +1,20 @@
 import { FormEvent, useEffect, useState } from 'react'
 
-import { createCustomEngineId, isValidUrlTemplate, type SearchEngine } from '../shared/engines'
+import {
+  createCustomEngineId,
+  isAiEngine,
+  isValidUrlTemplate,
+  type SearchEngine,
+} from '../shared/engines'
+import { testChatCompletion } from '../shared/llmClient'
+import {
+  DEFAULT_LLM_SETTINGS,
+  ensureHostPermissionForBaseUrl,
+  getLlmSettings,
+  originPatternFromBaseUrl,
+  saveLlmSettings,
+  type LlmSettings,
+} from '../shared/llmSettings'
 import { getEngines, resetEngines, saveEngines, syncSelectedWithEngines } from '../shared/storage'
 
 import './Options.css'
@@ -23,12 +37,16 @@ export const Options = () => {
   const [error, setError] = useState('')
   const [status, setStatus] = useState('')
   const [loading, setLoading] = useState(true)
+  const [llm, setLlm] = useState<LlmSettings>({ ...DEFAULT_LLM_SETTINGS })
+  const [llmBusy, setLlmBusy] = useState(false)
 
   useEffect(() => {
-    void getEngines().then((list) => {
+    void (async () => {
+      const [list, settings] = await Promise.all([getEngines(), getLlmSettings()])
       setEngines(list)
+      setLlm(settings)
       setLoading(false)
-    })
+    })()
   }, [])
 
   const persist = async (next: SearchEngine[], message = 'Saved.') => {
@@ -145,6 +163,63 @@ export const Options = () => {
     setError('')
   }
 
+  const saveLlm = async () => {
+    setLlmBusy(true)
+    setError('')
+    try {
+      const baseUrl = llm.baseUrl.trim() || DEFAULT_LLM_SETTINGS.baseUrl
+      if (llm.enabled) {
+        if (!llm.apiKey.trim()) {
+          setError('API key is required when the AI provider is enabled.')
+          return
+        }
+        if (!originPatternFromBaseUrl(baseUrl)) {
+          setError('Base URL must be https://… or http://localhost…')
+          return
+        }
+        const granted = await ensureHostPermissionForBaseUrl(baseUrl)
+        if (!granted) {
+          setError('Host permission was not granted for that base URL.')
+          return
+        }
+      }
+
+      const next = { ...llm, baseUrl }
+      await saveLlmSettings(next)
+      setLlm(next)
+      setStatus('AI provider settings saved on this device.')
+    } finally {
+      setLlmBusy(false)
+    }
+  }
+
+  const testLlm = async () => {
+    setLlmBusy(true)
+    setError('')
+    try {
+      const baseUrl = llm.baseUrl.trim() || DEFAULT_LLM_SETTINGS.baseUrl
+      if (!llm.apiKey.trim()) {
+        setError('Enter an API key before testing.')
+        return
+      }
+      if (!originPatternFromBaseUrl(baseUrl)) {
+        setError('Base URL must be https://… or http://localhost…')
+        return
+      }
+      const granted = await ensureHostPermissionForBaseUrl(baseUrl)
+      if (!granted) {
+        setError('Host permission was not granted for that base URL.')
+        return
+      }
+      const reply = await testChatCompletion({ ...llm, baseUrl })
+      setStatus(`Connection OK: ${reply.slice(0, 80)}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Connection test failed.')
+    } finally {
+      setLlmBusy(false)
+    }
+  }
+
   return (
     <main className="options">
       <header className="options__header">
@@ -152,7 +227,8 @@ export const Options = () => {
           <h1>Multi Search — Options</h1>
           <p className="options__help">
             Enable engines, reorder them, or add custom search URLs. Use <code>{'{query}'}</code>{' '}
-            where the search terms go.
+            where the search terms go. Optionally connect an OpenAI-compatible provider for inline
+            answers on the new-tab hub.
           </p>
         </div>
         <button type="button" className="options__secondary" onClick={() => void onReset()}>
@@ -162,6 +238,66 @@ export const Options = () => {
 
       {error ? <p className="options__error">{error}</p> : null}
       {status ? <p className="options__status">{status}</p> : null}
+
+      <section className="options__section" aria-label="AI provider">
+        <h2>AI provider (OpenAI-compatible)</h2>
+        <p className="options__help">
+          Your API key stays in local browser storage on this device and is only sent to the base
+          URL you configure (for example Kilo Gateway). Saving or testing asks for optional host
+          access to that origin only.
+        </p>
+        <div className="options__llm">
+          <label className="options__toggle">
+            <input
+              type="checkbox"
+              checked={llm.enabled}
+              onChange={(event) => setLlm((prev) => ({ ...prev, enabled: event.target.checked }))}
+            />
+            <span>Enable inline AI answers on the new-tab hub</span>
+          </label>
+          <label>
+            Base URL
+            <input
+              type="url"
+              value={llm.baseUrl}
+              placeholder={DEFAULT_LLM_SETTINGS.baseUrl}
+              onChange={(event) => setLlm((prev) => ({ ...prev, baseUrl: event.target.value }))}
+            />
+          </label>
+          <label>
+            Model
+            <input
+              type="text"
+              value={llm.model}
+              placeholder={DEFAULT_LLM_SETTINGS.model}
+              onChange={(event) => setLlm((prev) => ({ ...prev, model: event.target.value }))}
+            />
+          </label>
+          <label>
+            API key
+            <input
+              type="password"
+              value={llm.apiKey}
+              autoComplete="off"
+              placeholder="Bearer token for your gateway"
+              onChange={(event) => setLlm((prev) => ({ ...prev, apiKey: event.target.value }))}
+            />
+          </label>
+          <div className="options__actions">
+            <button type="button" disabled={llmBusy} onClick={() => void saveLlm()}>
+              Save provider
+            </button>
+            <button
+              type="button"
+              className="options__secondary"
+              disabled={llmBusy}
+              onClick={() => void testLlm()}
+            >
+              Test connection
+            </button>
+          </div>
+        </div>
+      </section>
 
       <section className="options__section" aria-label="Engine list">
         <h2>Engines</h2>
@@ -211,6 +347,7 @@ export const Options = () => {
                       />
                       <span>
                         <strong>{engine.name}</strong>
+                        {isAiEngine(engine) ? <span className="options__badge">AI</span> : null}
                         {!engine.builtin ? <span className="options__badge">custom</span> : null}
                       </span>
                     </label>

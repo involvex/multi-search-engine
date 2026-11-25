@@ -46,6 +46,111 @@
   margin-bottom: 0.65rem;
 }
 
+.search-panel__mode {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-bottom: 0.55rem;
+  padding: 0.2rem;
+  border: 1px solid #5f6368;
+  border-radius: 0.55rem;
+  background: rgba(48, 49, 52, 0.55);
+}
+
+.search-panel--page .search-panel__mode {
+  border-color: var(--nt-line, rgba(20, 33, 43, 0.12));
+  background: var(--nt-panel, rgba(255, 252, 247, 0.55));
+  margin-bottom: 0.75rem;
+}
+
+@media (prefers-color-scheme: light) {
+  .search-panel__mode {
+    border-color: #dadce0;
+    background: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.search-panel__mode-btn {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.search-panel__mode-btn--on {
+  background: #8ab4f8;
+  color: #202124;
+  opacity: 1;
+}
+
+.search-panel--page .search-panel__mode-btn--on {
+  background: var(--nt-accent, #0f766e);
+  color: #fff7ed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-panel--page .search-panel__mode-btn--on {
+    color: #042f2e;
+  }
+}
+
+.search-panel__mode-note {
+  margin: 0 0 0.65rem;
+  font-size: 0.78rem;
+  opacity: 0.7;
+  line-height: 1.35;
+}
+
+.search-panel__ai-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.08rem 0.35rem;
+  border-radius: 0.3rem;
+  background: rgba(138, 180, 248, 0.2);
+  color: #8ab4f8;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.search-panel--page .search-panel__ai-badge {
+  background: var(--nt-accent-soft, rgba(15, 118, 110, 0.14));
+  color: var(--nt-accent, #0f766e);
+}
+
+.answer-panel {
+  margin-top: 1.35rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--nt-line, rgba(20, 33, 43, 0.12));
+  border-radius: 0.9rem;
+  background: var(--nt-panel, rgba(255, 252, 247, 0.55));
+}
+
+.answer-panel__status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--nt-accent, #0f766e);
+}
+
+.answer-panel__query {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+  color: var(--nt-muted, #5a6b78);
+}
+
+.answer-panel__body {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 .search-panel__link {
   border: none;
   background: transparent;

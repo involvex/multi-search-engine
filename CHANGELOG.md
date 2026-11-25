@@ -9,6 +9,13 @@ Summary
   5. version timestamp follow the yyyy.MM.dd format
 ```
 
+## 0.3.0 [2026.11.25]
+
+- feat: Classic / AI search mode (Google/Bing remap to AI Mode / Copilot Search)
+- feat: built-in Google AI Mode and Bing Copilot Search engines
+- feat: optional OpenAI-compatible BYO provider (e.g. Kilo Gateway) for new-tab answers
+- chore: optional host permissions requested only for the configured provider origin
+
 ## 0.2.0 [2026.11.25]
 
 - feat: redesigned new-tab hub with clock, brand hero, and atmospheric backdrop

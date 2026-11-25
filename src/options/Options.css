@@ -228,3 +228,54 @@
 .options__add button {
   align-self: flex-start;
 }
+
+.options__llm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid #5f6368;
+  border-radius: 0.5rem;
+  background: #303134;
+}
+
+@media (prefers-color-scheme: light) {
+  .options__llm {
+    background: #fff;
+    border-color: #dadce0;
+  }
+}
+
+.options__llm label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.options__llm input[type='url'],
+.options__llm input[type='text'],
+.options__llm input[type='password'] {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #5f6368;
+  border-radius: 0.35rem;
+  background: #202124;
+  color: inherit;
+  font-size: 0.9rem;
+}
+
+@media (prefers-color-scheme: light) {
+  .options__llm input[type='url'],
+  .options__llm input[type='text'],
+  .options__llm input[type='password'] {
+    background: #fff;
+    border-color: #dadce0;
+  }
+}
+
+.options__llm .options__toggle {
+  flex-direction: row;
+  align-items: center;
+}

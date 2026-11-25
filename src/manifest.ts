@@ -28,4 +28,5 @@ export default defineManifest({
     newtab: 'newtab.html',
   },
   permissions: ['storage', 'contextMenus'],
+  optional_host_permissions: ['https://*/*', 'http://localhost/*'],
 })

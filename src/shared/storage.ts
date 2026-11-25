@@ -1,7 +1,8 @@
-import { DEFAULT_ENGINES, type SearchEngine } from './engines'
+import { DEFAULT_ENGINES, isSearchMode, type SearchEngine, type SearchMode } from './engines'
 
 const STORAGE_KEY = 'engines'
 const SELECTED_IDS_KEY = 'selectedEngineIds'
+const SEARCH_MODE_KEY = 'searchMode'
 
 function isSearchEngine(value: unknown): value is SearchEngine {
   if (!value || typeof value !== 'object') {
@@ -136,4 +137,14 @@ export async function resetEngines(): Promise<SearchEngine[]> {
   await saveEngines(engines)
   await saveSelectedEngineIds(engines.filter((engine) => engine.enabled).map((engine) => engine.id))
   return engines
+}
+
+export async function getSearchMode(): Promise<SearchMode> {
+  const result = await chrome.storage.sync.get(SEARCH_MODE_KEY)
+  const stored = result[SEARCH_MODE_KEY]
+  return isSearchMode(stored) ? stored : 'classic'
+}
+
+export async function saveSearchMode(mode: SearchMode): Promise<void> {
+  await chrome.storage.sync.set({ [SEARCH_MODE_KEY]: mode })
 }

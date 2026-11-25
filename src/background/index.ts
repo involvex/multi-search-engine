@@ -1,7 +1,7 @@
-import { buildSearchUrl } from '../shared/engines'
+import { resolveSearchUrl } from '../shared/engines'
 import { isOpenSearchesMessage } from '../shared/messages'
 import { openSearchTabs } from '../shared/openSearches'
-import { getEngines, getSelectedEngineIds } from '../shared/storage'
+import { getEngines, getSearchMode, getSelectedEngineIds } from '../shared/storage'
 
 const CONTEXT_MENU_ID = 'multi-search-selection'
 
@@ -38,10 +38,11 @@ chrome.contextMenus.onClicked.addListener((info) => {
   void (async () => {
     const engines = await getEngines()
     const selectedIds = await getSelectedEngineIds(engines)
+    const mode = await getSearchMode()
     const idSet = new Set(selectedIds)
     const targets = engines.filter((engine) => engine.enabled && idSet.has(engine.id))
     const urls = targets
-      .map((engine) => buildSearchUrl(engine, query))
+      .map((engine) => resolveSearchUrl(engine, query, mode))
       .filter((url) => url.length > 0)
 
     if (urls.length === 0) {
