@@ -3,7 +3,7 @@
   "displayName": "Multi Search",
   "version": "0.1.0",
   "author": "involvex",
-  "description": "Search Google, Bing, DuckDuckGo, and more at once — then pick the best result.",
+  "description": "Open one query across several search engines at once, then pick the best result.",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -24,7 +24,8 @@
     "lint:fix": "bun lint --fix",
     "typecheck": "bun check",
     "prebuild": "bun run format && bun run lint:fix && bun run typecheck",
-    "zip": "bun run build && bun src/zip.js"
+    "zip": "bun run build && bun src/zip.js",
+    "edge:upload": "node scripts/publish-edge.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

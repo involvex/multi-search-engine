@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 
 import { createCustomEngineId, isValidUrlTemplate, type SearchEngine } from '../shared/engines'
-import { getEngines, resetEngines, saveEngines } from '../shared/storage'
+import { getEngines, resetEngines, saveEngines, syncSelectedWithEngines } from '../shared/storage'
 
 import './Options.css'
 
@@ -34,6 +34,7 @@ export const Options = () => {
   const persist = async (next: SearchEngine[], message = 'Saved.') => {
     setEngines(next)
     await saveEngines(next)
+    await syncSelectedWithEngines(next)
     setStatus(message)
     setError('')
   }

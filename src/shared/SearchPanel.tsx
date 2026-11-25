@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react'
 
 import { buildSearchUrl, type SearchEngine } from './engines'
 import { openSearchTabs } from './openSearches'
-import { getEngines } from './storage'
+import { getEngines, getSelectedEngineIds, saveSelectedEngineIds } from './storage'
 
 type SearchPanelProps = {
   layout?: 'popup' | 'page'
@@ -17,12 +17,14 @@ export const SearchPanel = ({ layout = 'popup', onAfterSearch }: SearchPanelProp
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    void getEngines().then((list) => {
+    void (async () => {
+      const list = await getEngines()
       const enabled = list.filter((engine) => engine.enabled)
+      const selected = await getSelectedEngineIds(list)
       setEngines(enabled)
-      setSelectedIds(new Set(enabled.map((engine) => engine.id)))
+      setSelectedIds(new Set(selected))
       setLoading(false)
-    })
+    })()
   }, [])
 
   const selectedEngines = useMemo(
@@ -30,16 +32,27 @@ export const SearchPanel = ({ layout = 'popup', onAfterSearch }: SearchPanelProp
     [engines, selectedIds],
   )
 
+  const persistSelection = (next: Set<string>) => {
+    setSelectedIds(next)
+    void saveSelectedEngineIds([...next])
+  }
+
   const toggleEngine = (id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
-      return next
-    })
+    const next = new Set(selectedIds)
+    if (next.has(id)) {
+      next.delete(id)
+    } else {
+      next.add(id)
+    }
+    persistSelection(next)
+  }
+
+  const selectAll = () => {
+    persistSelection(new Set(engines.map((engine) => engine.id)))
+  }
+
+  const selectNone = () => {
+    persistSelection(new Set())
   }
 
   const openUrls = async (urls: string[]) => {
@@ -83,6 +96,14 @@ export const SearchPanel = ({ layout = 'popup', onAfterSearch }: SearchPanelProp
     void searchSelected()
   }
 
+  const selectedCount = selectedEngines.length
+  const primaryLabel =
+    selectedCount === 0
+      ? 'Search all selected'
+      : selectedCount === 1
+        ? 'Search 1 engine'
+        : `Search ${selectedCount} engines`
+
   return (
     <div className={`search-panel search-panel--${layout}`}>
       <header className="search-panel__header">
@@ -118,12 +139,24 @@ export const SearchPanel = ({ layout = 'popup', onAfterSearch }: SearchPanelProp
         {error ? <p className="search-panel__error">{error}</p> : null}
 
         <button className="search-panel__primary" type="submit" disabled={loading}>
-          Search all selected
+          {primaryLabel}
         </button>
       </form>
 
       <section className="search-panel__section" aria-label="Engines">
-        <h2>Engines</h2>
+        <div className="search-panel__section-head">
+          <h2>Engines</h2>
+          {!loading && engines.length > 0 ? (
+            <div className="search-panel__bulk">
+              <button type="button" className="search-panel__link" onClick={selectAll}>
+                Select all
+              </button>
+              <button type="button" className="search-panel__link" onClick={selectNone}>
+                Select none
+              </button>
+            </div>
+          ) : null}
+        </div>
         {loading ? (
           <p className="search-panel__muted">Loading…</p>
         ) : engines.length === 0 ? (

@@ -1,21 +1,22 @@
 # Multi Search
 
-Chrome extension (Manifest V3) that opens your query across multiple search engines so you can compare results and pick the best one.
+Chrome / Edge extension (Manifest V3) that opens your query across multiple search engines so you can compare results and pick the best one.
 
 Built with Vite + React (`create-chrome-ext`).
 
 ## Features
 
-- Popup search box with **Search all selected** and per-engine **Open**
+- Popup search box with a counted primary action and per-engine **Open**
+- Remembers which engines you last checked (`chrome.storage.sync`)
 - New Tab page replaced with the same Multi Search hub
+- Right-click selected text → **Search “…” with Multi Search**
 - Options page to enable, reorder, edit, and add custom engines (`{query}` URL templates)
 - Defaults: Google, Bing, DuckDuckGo, Brave Search, Ecosia, Yahoo
-- Settings sync via `chrome.storage.sync`
 
 ## Requirements
 
 - Node.js >= 14 (Bun works for scripts in this repo)
-- Chrome / Chromium with Developer mode
+- Chrome / Chromium or Microsoft Edge with Developer mode
 
 ## Setup
 
@@ -25,6 +26,8 @@ npm install
 # or: bun install
 ```
 
+Copy [`.env.example`](./.env.example) to `.env` only if you plan to upload package updates to Edge Add-ons later.
+
 ## Develop
 
 ```shell
@@ -32,9 +35,9 @@ npm run dev
 # or: bun run dev
 ```
 
-Then in Chrome:
+Then in Chrome or Edge:
 
-1. Open `chrome://extensions`
+1. Open `chrome://extensions` or `edge://extensions`
 2. Enable **Developer mode**
 3. **Load unpacked** → select the `build/` folder
 4. Click the extension icon, type a query, search
@@ -44,10 +47,12 @@ Reload the extension after rebuilds.
 ### Smoke test
 
 1. Open a new tab → Multi Search hub loads (not a missing-file error)
-2. Popup or new tab: enter a query → **Search all selected** → tabs open for selected engines
+2. Popup or new tab: enter a query → primary search button → tabs open for selected engines
 3. Use **Open** on one engine → only that tab opens
 4. Options: disable an engine, reorder, add a custom URL with `{query}`, search again
 5. Empty query shows validation and opens no tabs
+6. Uncheck engines, close popup, reopen → same checkboxes remain
+7. Select text on a page → context menu opens tabs for the remembered selection
 
 See also [AGENTS.md](./AGENTS.md) for contributor / AI-agent notes.
 
@@ -64,4 +69,58 @@ The `build/` folder is the unpacked extension. `zip` produces a store-ready arch
 
 ## Publish
 
+### Chrome Web Store
+
 See the [Chrome Web Store publish guide](https://developer.chrome.com/docs/webstore/publish).
+
+### Microsoft Edge Add-ons (first listing)
+
+`msstore` is for Microsoft Store apps (MSIX / MSI / EXE). Edge extensions use [Partner Center](https://partner.microsoft.com/dashboard) under the Microsoft Edge program. The [Update REST API](https://learn.microsoft.com/en-us/microsoft-edge/extensions/update/api/using-addons-api?tabs=v1-1) can only update a product that already exists.
+
+1. Run `bun run zip` and upload `package/*.zip` via **Create new extension**.
+2. Fill listing, privacy, and screenshots in Partner Center (paste text from below).
+3. After the product exists, copy its Product ID into `.env` as `EDGE_PRODUCT_ID`.
+4. Later package updates: `bun run edge:upload` (dry-run), then `bun run edge:upload -- --upload`.
+
+#### Store listing (paste into Partner Center)
+
+**Short description** (manifest / listing blurb — avoid naming other browsers such as DuckDuckGo):
+
+> Open one query across several search engines at once, then pick the best result.
+
+**Full description** (250+ characters; for Store listings — keep browser brand names out of marketing copy):
+
+> Multi Search opens your query in several search engines at once so you can compare results side by side and choose the best answer. Use the toolbar popup, the Multi Search new-tab hub, or right-click selected text on any page. Enable, reorder, and edit built-in search engines, or add your own HTTPS search URL templates with a `{query}` placeholder. Your engine list and last checkbox selection sync through browser storage. The extension does not scrape results pages or collect your search terms; each search opens a normal tab to the engine you chose.
+
+**Single purpose:**
+
+> Help users compare web search results by opening one query across multiple search engines they select.
+
+**Permission justifications:**
+
+- `storage` — Saves the engine list (enabled/order/custom templates) and the last set of engines you checked so the popup, new tab, and context menu stay consistent. No account or browsing history is stored.
+- `contextMenus` — Adds a right-click item on selected text so you can search that selection with Multi Search without copying it into the popup.
+
+**Remote code:** No. All extension code ships in the package; searches open ordinary HTTPS pages in new tabs.
+
+**Data / privacy:** Queries are not collected by Multi Search. They are only placed into the selected engines’ URL templates and opened as tabs you control. Settings sync via the browser’s sync storage when the user is signed in.
+
+**New tab override:** The extension replaces the browser new-tab page with the Multi Search hub (same search UI as the popup). This is the product’s search home, not an advertising page.
+
+#### Screenshot checklist
+
+Capture these from a loaded unpacked build before submitting:
+
+1. Popup with a sample query and several engines checked
+2. New tab hub centered on the search panel
+3. Options page showing the engine list and a custom template
+
+### Edge package update script
+
+```shell
+bun run edge:upload              # dry-run (default)
+bun run edge:upload -- --upload  # upload zip to draft submission
+bun run edge:upload -- --upload --publish  # upload then publish draft
+```
+
+Requires `.env` with `MICROSOFT_CLIENT_ID`, `MICROSOFT_API_KEY`, and `EDGE_PRODUCT_ID`. Never commit `.env`.

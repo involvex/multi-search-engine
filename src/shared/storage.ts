@@ -1,6 +1,7 @@
 import { DEFAULT_ENGINES, type SearchEngine } from './engines'
 
 const STORAGE_KEY = 'engines'
+const SELECTED_IDS_KEY = 'selectedEngineIds'
 
 function isSearchEngine(value: unknown): value is SearchEngine {
   if (!value || typeof value !== 'object') {
@@ -15,6 +16,10 @@ function isSearchEngine(value: unknown): value is SearchEngine {
     typeof engine.enabled === 'boolean' &&
     typeof engine.builtin === 'boolean'
   )
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string')
 }
 
 /** Merge stored engines with defaults so new built-ins appear without wiping customs. */
@@ -72,8 +77,63 @@ export async function saveEngines(engines: SearchEngine[]): Promise<void> {
   await chrome.storage.sync.set({ [STORAGE_KEY]: engines })
 }
 
+/**
+ * Resolve which engine ids should be checked in the UI / context menu.
+ * Missing key → all enabled engines. Saved array → intersect with still-enabled engines.
+ */
+export function resolveSelectedIds(
+  engines: SearchEngine[],
+  stored: string[] | undefined,
+): string[] {
+  const enabledIds = engines.filter((engine) => engine.enabled).map((engine) => engine.id)
+  const enabledSet = new Set(enabledIds)
+
+  if (!stored) {
+    return enabledIds
+  }
+
+  return stored.filter((id) => enabledSet.has(id))
+}
+
+export async function getSelectedEngineIds(engines?: SearchEngine[]): Promise<string[]> {
+  const list = engines ?? (await getEngines())
+  const result = await chrome.storage.sync.get(SELECTED_IDS_KEY)
+  const stored = result[SELECTED_IDS_KEY]
+  const saved = isStringArray(stored) ? stored : undefined
+  return resolveSelectedIds(list, saved)
+}
+
+export async function saveSelectedEngineIds(ids: string[]): Promise<void> {
+  await chrome.storage.sync.set({ [SELECTED_IDS_KEY]: ids })
+}
+
+/** Keep selected ids in sync when Options enables, disables, deletes, or resets engines. */
+export async function syncSelectedWithEngines(engines: SearchEngine[]): Promise<string[]> {
+  const result = await chrome.storage.sync.get(SELECTED_IDS_KEY)
+  const stored = result[SELECTED_IDS_KEY]
+  const hadStored = isStringArray(stored)
+  const previous = hadStored ? stored : undefined
+  const enabledIds = engines.filter((engine) => engine.enabled).map((engine) => engine.id)
+  const enabledSet = new Set(enabledIds)
+
+  let next: string[]
+  if (!previous) {
+    next = enabledIds
+  } else {
+    const kept = previous.filter((id) => enabledSet.has(id))
+    const newlyEnabled = enabledIds.filter((id) => !previous.includes(id) && !kept.includes(id))
+    // Newly enabled engines (including freshly added customs) join the selection.
+    // Disabled / deleted engines are already dropped by the filter above.
+    next = [...kept, ...newlyEnabled]
+  }
+
+  await saveSelectedEngineIds(next)
+  return next
+}
+
 export async function resetEngines(): Promise<SearchEngine[]> {
   const engines = DEFAULT_ENGINES.map((engine) => ({ ...engine }))
   await saveEngines(engines)
+  await saveSelectedEngineIds(engines.filter((engine) => engine.enabled).map((engine) => engine.id))
   return engines
 }

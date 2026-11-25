@@ -9,26 +9,27 @@ Users type one query and open it across multiple search engines (Google, Bing, D
 
 ## Layout
 
-| Path              | Role                                        |
-| ----------------- | ------------------------------------------- |
-| `src/manifest.ts` | MV3 manifest (source of truth)              |
-| `src/popup/`      | Toolbar popup                               |
-| `src/newtab/`     | Chrome new-tab override (search hub)        |
-| `src/options/`    | Enable / reorder / add custom engines       |
-| `src/background/` | Service worker (optional message fallback)  |
-| `src/shared/`     | Engines, storage, `SearchPanel`, tab opener |
-| `build/`          | Load-unpacked output (gitignored)           |
+| Path              | Role                                             |
+| ----------------- | ------------------------------------------------ |
+| `src/manifest.ts` | MV3 manifest (source of truth)                   |
+| `src/popup/`      | Toolbar popup                                    |
+| `src/newtab/`     | Chrome new-tab override (search hub)             |
+| `src/options/`    | Enable / reorder / add custom engines            |
+| `src/background/` | Service worker (context menu + message fallback) |
+| `src/shared/`     | Engines, storage, `SearchPanel`, tab opener      |
+| `scripts/`        | Edge Add-ons update helper (v1.1 API)            |
+| `build/`          | Load-unpacked output (gitignored)                |
 
 Unused scaffold folders (`sidepanel`, `devtools`, `contentScript`) may still exist on disk but must **not** be registered in the manifest unless intentionally revived.
 
 ## Invariants
 
-1. Search tabs are opened with `chrome.tabs.create` from the UI (`src/shared/openSearches.ts`). Do not rely only on messaging the service worker — popup close races break search.
+1. Search tabs from the popup / new tab are opened with `chrome.tabs.create` via `src/shared/openSearches.ts`. Do not rely only on messaging the service worker for those UI paths — popup close races break search. The selection **context menu** is the exception: it must open tabs from the service worker.
 2. Engine URL templates must include `{query}`; values are `encodeURIComponent`’d in `buildSearchUrl`.
-3. Settings live in `chrome.storage.sync` under key `engines`. Prefer `getEngines` / `saveEngines` / `mergeWithDefaults`.
+3. Settings live in `chrome.storage.sync` under keys `engines` and `selectedEngineIds`. Prefer `getEngines` / `saveEngines` / `mergeWithDefaults` / `getSelectedEngineIds` / `saveSelectedEngineIds` / `syncSelectedWithEngines`.
 4. Built-in engines (`builtin: true`) can be disabled/edited but not deleted; customs can be deleted.
-5. Permissions stay minimal (`storage`). Do not add host permissions or scraping for SERPs in v1.
-6. Node/Bun for tooling; never assume Bun for the extension runtime (Chrome).
+5. Permissions stay minimal (`storage`, `contextMenus`). Do not add host permissions or scraping for SERPs in v1.
+6. Node/Bun for tooling; never assume Bun for the extension runtime (Chrome / Edge).
 
 ## Commands
 
@@ -40,18 +41,21 @@ bun run lint
 bun run format
 bun run build        # format + lint:fix + typecheck + tsc + vite build
 bun run zip          # build + zip under package/
+bun run edge:upload  # dry-run Edge Add-ons package upload (needs .env + product id)
 ```
 
-Load unpacked: `chrome://extensions` → Developer mode → **Load unpacked** → `build/`.
+Load unpacked: `chrome://extensions` or `edge://extensions` → Developer mode → **Load unpacked** → `build/`.
 After every meaningful change: rebuild (or keep `dev` running) and **Reload** the extension.
 
 ## Smoke test after changes
 
 1. New tab shows Multi Search hub (not “file not found”).
-2. Popup / new tab: query → **Search all selected** opens one tab per selected engine.
+2. Popup / new tab: query → primary search button opens one tab per selected engine.
 3. Per-engine **Open** opens a single tab.
 4. Options: toggle, reorder, add custom `{query}` template, reset defaults.
 5. Empty query shows validation and opens no tabs.
+6. Uncheck some engines, close popup, reopen → same checkboxes remain.
+7. Select text on a page → context menu **Search “…” with Multi Search** opens tabs for the remembered selection.
 
 ## Do / don’t
 
@@ -60,9 +64,9 @@ After every meaningful change: rebuild (or keep `dev` running) and **Reload** th
 - **Don’t** scrape Google/Bing HTML or embed SERPs in iframes (blocked / fragile).
 - **Don’t** commit secrets, `build/`, or `package/` archives.
 - **Don’t** expand permissions without a clear product need.
+- **Don’t** use `msstore` for Edge add-ons — that CLI is for Microsoft Store apps. Use Partner Center for the first listing and `scripts/publish-edge.mjs` for later package updates.
 
 ## Suggested follow-ups
 
-- Context-menu “Search selection with Multi Search”
 - Omnibox keyword
-- Remember last session checkbox set (optional)
+- Optional Chrome Web Store publish path
