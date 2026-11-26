@@ -135,9 +135,23 @@ bun run edge:upload -- --upload --publish  # upload then publish draft
 
 Requires `.env` with `MICROSOFT_CLIENT_ID`, `MICROSOFT_API_KEY`, and `EDGE_PRODUCT_ID`. Never commit `.env`.
 
+### GitHub Actions (tag → Edge)
+
+Pushing a `v*` tag (as `bun run release` does) runs [`.github/workflows/edge-publish.yml`](./.github/workflows/edge-publish.yml): it builds the zip from that commit and runs `node scripts/publish-edge.mjs --upload --publish`.
+
+Repository secrets (set once with `gh secret set`, values piped from `.env`):
+
+- `MICROSOFT_CLIENT_ID`
+- `MICROSOFT_API_KEY`
+- `EDGE_PRODUCT_ID`
+
+```shell
+gh secret list   # names only; confirm the three above
+```
+
 ### GitHub release script
 
-Bumps `package.json` (manifest version follows at build), prepends `CHANGELOG.md`, runs `zip`, commits, tags, pushes, and creates a GitHub release with the zip artifact. Default bump is **patch**. Requires a clean tree and authenticated `gh`.
+Bumps `package.json` (manifest version follows at build), prepends `CHANGELOG.md`, runs `zip`, commits, tags, pushes, and creates a GitHub release with the zip artifact. Default bump is **patch**. Requires a clean tree and authenticated `gh`. After the tag is on the remote, the Edge publish workflow above runs automatically.
 
 ```shell
 bun run release                         # 0.3.0 → 0.3.1

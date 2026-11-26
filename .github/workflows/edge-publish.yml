@@ -1,0 +1,35 @@
+# Publish a tagged package to the existing Edge Add-ons product (API v1.1).
+# Triggered when bun run release pushes a v* tag. Builds the zip from that commit
+# so the job does not race the GitHub release asset upload.
+name: Edge Add-ons publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build store zip
+        run: bun run zip
+
+      - name: Upload and publish to Edge Add-ons
+        env:
+          MICROSOFT_CLIENT_ID: ${{ secrets.MICROSOFT_CLIENT_ID }}
+          MICROSOFT_API_KEY: ${{ secrets.MICROSOFT_API_KEY }}
+          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+        run: node scripts/publish-edge.mjs --upload --publish

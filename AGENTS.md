@@ -73,17 +73,17 @@ After every meaningful change: rebuild (or keep `dev` running) and **Reload** th
 
 - Omnibox keyword
 - Optional Chrome Web Store publish path
-- GitHub Actions tag → `edge:upload -- --upload --publish`
 
 ## Current work
 
-- v0.3.0 Classic/AI mode + BYO OpenAI-compatible answers on new tab
+- Tag → Edge Add-ons publish workflow (`.github/workflows/edge-publish.yml`); next `bun run release` exercises it
 
 ## Learned preferences
 
 - Edge listing copy must not name other browsers (Partner Center validation)
 - Prefer local `EDGE_PRODUCT_ID` / Partner Center `ProductID` for API updates after first listing
 - Edge Add-ons listing: https://microsoftedge.microsoft.com/addons/detail/multi-search/camkpjdkmcfncdiohngnljdpjblpddmi
+- Edge CI secrets: `MICROSOFT_CLIENT_ID`, `MICROSOFT_API_KEY`, `EDGE_PRODUCT_ID` (from local `.env` via `gh secret set`)
 
 ## Learned workspace facts
 
@@ -91,3 +91,4 @@ After every meaningful change: rebuild (or keep `dev` running) and **Reload** th
 - New tab and popup share `SearchPanel`; page layout gets recent queries via `chrome.storage.local`
 - Google AI Mode URL uses `udm=50`; Bing Copilot Search uses `/copilotsearch`
 - Kilo Gateway default base URL: `https://api.kilo.ai/api/gateway`
+- `v*` tags trigger Edge upload+publish in GitHub Actions (zip built in CI)
