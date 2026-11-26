@@ -9,6 +9,10 @@ Summary
   5. version timestamp follow the yyyy.MM.dd format
 ```
 
+## 0.3.2 [2026.11.26]
+
+- ci: Edge Add-ons publish workflow on v* tags
+
 ## 0.3.1 [2026.11.25]
 
 - feat: Classic/AI search mode and Google AI Mode / Bing Copilot engines

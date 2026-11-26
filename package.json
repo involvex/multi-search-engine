@@ -1,7 +1,7 @@
 {
   "name": "multi-search-engine",
   "displayName": "Multi Search",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": "involvex",
   "description": "Open one query across several search engines at once, then pick the best result.",
   "type": "module",
