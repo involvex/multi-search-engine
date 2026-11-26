@@ -2,6 +2,8 @@
 
 Chrome / Edge extension (Manifest V3) that opens your query across multiple search engines so you can compare results and pick the best one.
 
+**Install on Microsoft Edge:** [Multi Search on Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/multi-search/camkpjdkmcfncdiohngnljdpjblpddmi)
+
 Built with Vite + React (`create-chrome-ext`).
 
 ## Features
@@ -78,9 +80,11 @@ The `build/` folder is the unpacked extension. `zip` produces a store-ready arch
 
 See the [Chrome Web Store publish guide](https://developer.chrome.com/docs/webstore/publish).
 
-### Microsoft Edge Add-ons (first listing)
+### Microsoft Edge Add-ons
 
-`msstore` is for Microsoft Store apps (MSIX / MSI / EXE). Edge extensions use [Partner Center](https://partner.microsoft.com/dashboard) under the Microsoft Edge program. The [Update REST API](https://learn.microsoft.com/en-us/microsoft-edge/extensions/update/api/using-addons-api?tabs=v1-1) can only update a product that already exists.
+Live listing: [Multi Search on Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/multi-search/camkpjdkmcfncdiohngnljdpjblpddmi)
+
+`msstore` is for Microsoft Store apps (MSIX / MSI / EXE). Edge extensions use [Partner Center](https://partner.microsoft.com/dashboard) under the Microsoft Edge program. The [Update REST API](https://learn.microsoft.com/en-us/microsoft-edge/extensions/update/api/using-addons-api?tabs=v1-1) updates an existing product after the first listing.
 
 1. Run `bun run zip` and upload `package/*.zip` via **Create new extension**.
 2. Fill listing, privacy, and screenshots in Partner Center (paste text from below).

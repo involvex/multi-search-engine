@@ -23,6 +23,8 @@ import './Options.css'
 const REPO_URL = 'https://github.com/involvex/multi-search-engine'
 const SPONSOR_URL = 'https://github.com/involvex/multi-search-engine?sponsor=1'
 const AUTHOR_URL = 'https://github.com/involvex'
+const EDGE_ADDONS_URL =
+  'https://microsoftedge.microsoft.com/addons/detail/multi-search/camkpjdkmcfncdiohngnljdpjblpddmi'
 
 type Draft = {
   name: string
@@ -450,6 +452,19 @@ export const Options = () => {
             <dd>
               <a className="options__about-link" href={REPO_URL} target="_blank" rel="noreferrer">
                 github.com/involvex/multi-search-engine
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt>Edge store</dt>
+            <dd>
+              <a
+                className="options__about-link"
+                href={EDGE_ADDONS_URL}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Microsoft Edge Add-ons
               </a>
             </dd>
           </div>

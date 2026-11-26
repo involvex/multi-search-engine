@@ -83,6 +83,7 @@ After every meaningful change: rebuild (or keep `dev` running) and **Reload** th
 
 - Edge listing copy must not name other browsers (Partner Center validation)
 - Prefer local `EDGE_PRODUCT_ID` / Partner Center `ProductID` for API updates after first listing
+- Edge Add-ons listing: https://microsoftedge.microsoft.com/addons/detail/multi-search/camkpjdkmcfncdiohngnljdpjblpddmi
 
 ## Learned workspace facts
 
